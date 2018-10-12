@@ -2,10 +2,9 @@ import os
 import logging
 import json
 import pymysql
-from pathlib import Path
 import shops
 
-CURRENT_PATH = str(Path(os.path.dirname(os.path.realpath(__file__)) + '/').parent)
+CURRENT_PATH = (os.path.dirname(os.path.realpath(__file__)) + '/')
 
 
 def set_up():
