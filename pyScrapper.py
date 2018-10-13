@@ -23,6 +23,7 @@ def set_up():
 
 
 def run(_config):
+    logging.basicConfig(level=logging.INFO)
     logging.info('Connecting to the database')
     db = database.database(_config['dbhost'], _config['dbuser'], _config['dbpassword'], _config['dbname'])
     logging.info('Connected!')
