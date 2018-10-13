@@ -28,13 +28,13 @@ class database():
 
     def create_table(self):
         self.connect()
-        products = ("CREATE TABLE IF NOT EXIST products ("
-                    "id INT NOT NULL AUTO_INCREMENT,"
-                    "name VARCHAR(100) NOT NULL DEFAULT '',"
-                    "url VARCHAR(255) NOT NULL DEFAULT '',"
-                    "shop VARCHAR(100) NOT NULL DEFAULT '',"
-                    "PRIMARY KEY(product_id))")
-        prices = ("CREATE TABLE IF NOT EXIST prices ("
+        products = """CREATE TABLE IF NOT EXISTS products (
+                    id INT NOT NULL AUTO_INCREMENT,
+                    name VARCHAR(100) NOT NULL DEFAULT '',
+                    url VARCHAR(255) NOT NULL DEFAULT '',
+                    shop VARCHAR(100) NOT NULL DEFAULT '',
+                    PRIMARY KEY(product_id))"""
+        prices = ("CREATE TABLE IF NOT EXISTS prices ("
                   "product_id INT,"
                   "price FLOAT NOT NULL DEFAULT -1.0,"
                   "time DATETIME NOT NULL,"
