@@ -10,9 +10,11 @@ class database():
         self.dbname = _dbname
         self.mysql = None
         self.cursor: pymysql.cursors.Cursor = None
+        self.create_table()
 
     def __del__(self):
         if self.mysql is not None:
+            self.cursor.close()
             self.mysql.close()
 
     def connect(self):
@@ -34,11 +36,30 @@ class database():
                     url VARCHAR(255) NOT NULL DEFAULT '',
                     shop VARCHAR(100) NOT NULL DEFAULT '',
                     PRIMARY KEY(id))"""
-        prices = ("CREATE TABLE IF NOT EXISTS prices ("
-                  "product_id INT,"
-                  "price FLOAT NOT NULL DEFAULT -1.0,"
-                  "time DATETIME NOT NULL,"
-                  "FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)")
+        prices = """CREATE TABLE IF NOT EXISTS prices (
+                  product_id INT,
+                  price FLOAT NOT NULL DEFAULT -1.0,
+                  time DATETIME NOT NULL,
+                  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)"""
         self.cursor.execute(products)
         self.cursor.execute(prices)
         self.mysql.commit()
+
+    def get_products(self):
+        self.connect()
+        sql = 'SELECT id, shop, url FROM products'
+        try:
+            self.cursor.execute(sql)
+            return self.cursor.fetchall()
+        except:
+            logging.error('Unable to fetch data')
+
+    def insert_price(self, _id, _price, _timestamp):
+        self.connect()
+        sql = 'INSERT INTO prices VALUES({}, {}, {})'.format(_id, _price, _timestamp)
+        try:
+            self.cursor.execute(sql)
+            self.mysql.commit()
+        except:
+            self.mysql.rollback()
+            logging.error('Unable to insert data')

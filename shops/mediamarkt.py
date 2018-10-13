@@ -4,8 +4,8 @@ from .shop import Shop
 
 
 class MediaMarkt(Shop):
-    def __init__(self, _name: str, _url: str):
-        super().__init__(_name, _url)
+    def __init__(self, _id, _url: str):
+        super().__init__(_id, _url)
         self.type = 'MediaMarkt'
         self.price = self.get_price()
 
