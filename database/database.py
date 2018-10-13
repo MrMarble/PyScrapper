@@ -39,7 +39,7 @@ class database():
         prices = """CREATE TABLE IF NOT EXISTS prices (
                   product_id INT,
                   price FLOAT NOT NULL DEFAULT -1.0,
-                  time DATETIME NOT NULL,
+                  time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)"""
         self.cursor.execute(products)
         self.cursor.execute(prices)
@@ -54,9 +54,9 @@ class database():
         except:
             logging.error('Unable to fetch data')
 
-    def insert_price(self, _id, _price, _timestamp):
+    def insert_price(self, _id, _price):
         self.connect()
-        sql = 'INSERT INTO prices VALUES({}, {}, {})'.format(_id, _price, _timestamp)
+        sql = 'INSERT INTO prices(product_id,price) VALUES({}, {})'.format(_id, _price)
         try:
             self.cursor.execute(sql)
             self.mysql.commit()

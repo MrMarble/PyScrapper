@@ -23,7 +23,7 @@ def set_up():
 
 
 def run(_config):
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, filename=CURRENT_PATH + '/log.txt', format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S')
     logging.info('Connecting to the database')
     db = database.database(_config['dbhost'], _config['dbuser'], _config['dbpassword'], _config['dbname'])
     logging.info('Connected!')
@@ -33,14 +33,14 @@ def run(_config):
     for product in _products:
         logging.info('Fetching price for product ID: {}'.format(product[0]))
         p = None
-        if product[1] is 'Amazon':
+        if product[1] == 'Amazon':
             p = shops.Amazon(product[0], product[2])
-        elif product[1] is 'fnac':
+        elif product[1] == 'fnac':
             p = shops.Fnac(product[0], product[2])
-        elif product[1] is 'MediaMarkt':
+        elif product[1] == 'MediaMarkt':
             p = shops.MediaMarkt(product[0], product[2])
         if p is not None:
-            db.insert_price(p.id, p.price, p.timestamp)
+            db.insert_price(p.id, p.price)
     logging.info('All Done!')
 
 
