@@ -29,7 +29,7 @@ class database():
     def create_table(self):
         self.connect()
         products = ("CREATE TABLE IF NOT EXIST products ("
-                    "id INT NOT NULL AUTO_INCREMENT"
+                    "id INT NOT NULL AUTO_INCREMENT,"
                     "name VARCHAR(100) NOT NULL DEFAULT '',"
                     "url VARCHAR(255) NOT NULL DEFAULT '',"
                     "shop VARCHAR(100) NOT NULL DEFAULT '',"
