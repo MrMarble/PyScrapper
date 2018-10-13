@@ -33,7 +33,7 @@ class database():
                     name VARCHAR(100) NOT NULL DEFAULT '',
                     url VARCHAR(255) NOT NULL DEFAULT '',
                     shop VARCHAR(100) NOT NULL DEFAULT '',
-                    PRIMARY KEY(product_id))"""
+                    PRIMARY KEY(id))"""
         prices = ("CREATE TABLE IF NOT EXISTS prices ("
                   "product_id INT,"
                   "price FLOAT NOT NULL DEFAULT -1.0,"
