@@ -28,17 +28,18 @@ class database():
 
     def create_table(self):
         self.connect()
-        self.cursor.execute("""CREATE TABLE IF NOT EXIST `products` (
-            `id` int(10) NOT NULL AUTO_INCREMENT
-            `name` varchar(100) NOT NULL DEFAULT '',
-            `url` varchar(255) NOT NULL DEFAULT '',
-            `shop` varchar(100) NOT NULL DEFAULT '',
+        sql = """CREATE TABLE IF NOT EXIST products (
+            id INT NOT NULL AUTO_INCREMENT
+            name VARCHAR(100) NOT NULL DEFAULT '',
+            url VARCHAR(255) NOT NULL DEFAULT '',
+            shop VARCHAR(100) NOT NULL DEFAULT '',
             PRIMARY KEY(product_id)
-        )""")
-        self.cursor.execute("""CREATE TABLE IF NOT EXIST `prices` (
-            `product_id` int(10),
-            `price` FLOAT NOT NULL DEFAULT -1.0,
-            `time` DATETIME NOT NULL,
+        );
+        CREATE TABLE IF NOT EXIST prices (
+            product_id INT,
+            price FLOAT NOT NULL DEFAULT -1.0,
+            time DATETIME NOT NULL,
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-        )""")
+        )"""
+        self.cursor.execute(sql)
         self.mysql.commit()
