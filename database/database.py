@@ -39,5 +39,6 @@ class database():
                   "price FLOAT NOT NULL DEFAULT -1.0,"
                   "time DATETIME NOT NULL,"
                   "FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE)")
-        self.cursor.execute(products, prices)
+        self.cursor.execute(products)
+        self.cursor.execute(prices)
         self.mysql.commit()
