@@ -24,7 +24,7 @@ class database():
 
     def get_connection(self):
         if self.db_type == "sqlite":
-            return self.db_type + "://" + self.dbname
+            return self.db_type + "://" + self.dbname + ".db"
         elif self.db_type in ["mongodb", "mysql"]:
             return self.db_type + "://" + self.user + ":" + self.password + "@" + self.host + "/" + self.dbname
   
