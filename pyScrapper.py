@@ -17,7 +17,7 @@ def set_up():
         elif type(e) is json.decoder.JSONDecodeError:
             logging.warning('Config file is corrupted!\nCreating a new one...')
 
-        config = dict(dbhost="localhost", dbuser="root", dbpassword="root", dbname="prices")
+        config = dict(db_type="sqlite", db_host="localhost", db_user="root", db_password="root", db_name="prices")
         json.dump(config, open(CURRENT_PATH + '/config.json', 'w'), indent=True)
         exit(0)
 
@@ -25,13 +25,19 @@ def set_up():
 def run(_config):
     logging.basicConfig(level=logging.INFO, filename=CURRENT_PATH + '/log.txt', format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S')
     logging.info('Connecting to the database')
-    db = database.database(_config['dbhost'], _config['dbuser'], _config['dbpassword'], _config['dbname'])
+
+    db = database.database(_config['db_type'], _config['db_host'], _config['db_user'], _config['db_password'], _config['db_name'])
+    
     logging.info('Connected!')
     logging.info('Getting products...')
+
     _products = db.get_products()
+
     logging.info('{} Products obtained from the database'.format(len(_products)))
+
     for product in _products:
         logging.info('Fetching price for product ID: {}'.format(product[0]))
+
         p = None
         if product[1] == 'Amazon':
             p = shops.Amazon(product[0], product[2])
@@ -41,6 +47,7 @@ def run(_config):
             p = shops.MediaMarkt(product[0], product[2])
         if p is not None:
             db.insert_price(p.id, p.price)
+            
     logging.info('All Done!')
 
 
