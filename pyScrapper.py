@@ -1,4 +1,4 @@
-import os
+import os, sys
 import logging
 import json
 import database
@@ -24,6 +24,10 @@ def set_up():
 
 def run(_config):
     logging.basicConfig(level=logging.INFO, filename=CURRENT_PATH + '/log.txt', format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S')
+    logger = logging.getLogger()
+    handler = logging.StreamHandler(sys.stdout)
+    logger.addHandler(handler)
+
     logging.info('Connecting to the database')
 
     db = database.database(_config['db_type'], _config['db_host'], _config['db_user'], _config['db_password'], _config['db_name'])
@@ -36,17 +40,18 @@ def run(_config):
     logging.info('{} Products obtained from the database'.format(len(_products)))
 
     for product in _products:
-        logging.info('Fetching price for product ID: {}'.format(product[0]))
+        logging.info('Fetching price for product ID: {}'.format(product.id))
 
-        p = None
-        if product[1] == 'Amazon':
-            p = shops.Amazon(product[0], product[2])
-        elif product[1] == 'fnac':
-            p = shops.Fnac(product[0], product[2])
-        elif product[1] == 'MediaMarkt':
-            p = shops.MediaMarkt(product[0], product[2])
-        if p is not None:
-            db.insert_price(p.id, p.price)
+        current_product = None
+
+        if product.shop == 'Amazon':
+            current_product = shops.Amazon(product.id, product.url)
+        elif product.shop == 'fnac':
+            current_product = shops.Fnac(product.id, product.url)
+        elif product.shop == 'MediaMarkt':
+            current_product = shops.MediaMarkt(product.id, product.url)
+        if current_product is not None:
+            db.insert_price(current_product.id, current_product.price)
             
     logging.info('All Done!')
 

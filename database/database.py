@@ -1,7 +1,6 @@
-import pymysql
 import logging
-from pydal import DAL, Field
 import datetime
+from pydal import DAL, Field
 
 
 class database():
@@ -51,7 +50,7 @@ class database():
             'prices', 
             Field('product_id', "reference products", required=True, default="", ondelete='CASCADE'),
             Field('price', type="double", required=True, default=""),
-            Field('time', type="datetime", required=True, default="")
+            Field('time', type="datetime", required=True, default=datetime.datetime.now())
             )
 
 
@@ -61,6 +60,23 @@ class database():
             return self.db_instance().select( self.db_instance.products.ALL )
         except:
             logging.error('Unable to fetch data')
+
+
+    def get_prices(self, _product_id):
+        self.connect()
+        try:
+            return self.db_instance( self.db_instance.prices.product_id == _product_id ).select()
+        except:
+            logging.error('Unable to fetch data')
+
+    
+    def insert_products(self, _name, _url, _shop):
+        self.connect()
+        try:
+            self.db_instance.products.insert( name=_name, url=_url, shop=_shop )
+        except:
+            logging.error('Unable to insert data')
+
 
     def insert_price(self, _id, _price):
         self.connect()
