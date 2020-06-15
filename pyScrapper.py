@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, re
 import logging
 import requests
 import json
@@ -10,6 +10,10 @@ CURRENT_PATH = (os.path.dirname(os.path.realpath(__file__)) + '/')
 
 def set_up():
     try:
+        if not os.path.exists(CURRENT_PATH + 'urls.txt'):
+            with open(CURRENT_PATH + 'urls.txt', 'w') as f:
+                f.write('name,url')
+
         with open(CURRENT_PATH + '/config.json', 'r') as file:
             return json.load(file)
     except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
@@ -21,6 +25,7 @@ def set_up():
         config = dict(db_type="sqlite", db_host="localhost", db_user="root", db_password="root", db_name="prices", tg_token="BOT_TOKEN", tg_chat_id="000000000")
         json.dump(config, open(CURRENT_PATH + '/config.json', 'w'), indent=True)
         exit(0)
+    
 
 
 def run(_config):
@@ -34,6 +39,23 @@ def run(_config):
     db = database.database(_config['db_type'], _config['db_host'], _config['db_user'], _config['db_password'], _config['db_name'])
     
     logging.info('Connected!')
+
+    logging.info('Reading file urls')
+    try:
+        with open('urls.txt') as f:
+            urls = [line.rstrip() for line in f]
+    
+        for url in urls:
+            data = url.split(',')
+            #Change in the future by regex that obtain only the name of the domain without declare the names
+            db.insert_products(data[0],data[1],re.search('(mediamarkt|amazon|fnac)', data[1]).group(1))
+            logging.info('Urls loaded')
+    except:
+        logging.error('File load urls failed!')
+    
+    
+    
+
     logging.info('Getting products...')
 
     _products = db.get_products()
@@ -45,14 +67,14 @@ def run(_config):
 
         current_product = None
 
-        if product.shop == 'Amazon':
+        if product.shop == 'amazon':
             current_product = shops.Amazon(product.id, product.url)
         elif product.shop == 'fnac':
             current_product = shops.Fnac(product.id, product.url)
-        elif product.shop == 'MediaMarkt':
+        elif product.shop == 'mediamarkt':
             current_product = shops.MediaMarkt(product.id, product.url)
 
-        if db.is_cheapest( current_product.id, current_product.price ) and current_product is not None:
+        if current_product is not None and db.is_cheapest( current_product.id, current_product.price ):
             logging.info('The product with ID: {} is cheaper'.format(product.id))
             requests.get('https://api.telegram.org/bot{}/sendmessage?text={}&chat_id={}'.format(_config['tg_token'], 'El producto {} esta mas barato. {}€'.format(product.name, current_product.price), _config['tg_chat_id']))
 

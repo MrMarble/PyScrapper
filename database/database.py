@@ -42,7 +42,7 @@ class database():
         self.db_instance.define_table(
             'products', 
             Field('name', required=True, default=""),
-            Field('url', required=True, default=""),
+            Field('url', required=True, default="", unique=True),
             Field('shop', required=True, default="")
             )
 
@@ -89,6 +89,8 @@ class database():
     def is_cheapest(self, _product_id, _last_price):
         self.connect()
         try:
+            if  len(self.db_instance( self.db_instance.prices.product_id == _product_id ).select()) < 1:
+                return False
             return _last_price < self.db_instance( self.db_instance.prices.product_id == _product_id ).select().last().price
-        except expression as identifier:
+        except:
             logging.error('Unable to compare prices')

@@ -6,7 +6,7 @@ from .shop import Shop
 class MediaMarkt(Shop):
     def __init__(self, _id, _url: str):
         super().__init__(_id, _url)
-        self.type = 'MediaMarkt'
+        self.type = 'mediamarkt'
         self.price = self.get_price()
 
     def get_price(self):
