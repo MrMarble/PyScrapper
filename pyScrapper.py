@@ -1,9 +1,9 @@
 import os, sys, re
 import logging
-import requests
 import json
 import database
 import shops
+import notifications
 
 CURRENT_PATH = (os.path.dirname(os.path.realpath(__file__)) + '/')
 
@@ -26,7 +26,6 @@ def set_up():
         json.dump(config, open(CURRENT_PATH + '/config.json', 'w'), indent=True)
         exit(0)
     
-
 
 def run(_config):
     logging.basicConfig(level=logging.INFO, filename=CURRENT_PATH + '/log.txt', format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%d/%m/%Y %I:%M:%S')
@@ -52,9 +51,6 @@ def run(_config):
             logging.info('Urls loaded')
     except:
         logging.error('File load urls failed!')
-    
-    
-    
 
     logging.info('Getting products...')
 
@@ -76,7 +72,7 @@ def run(_config):
 
         if current_product is not None and db.is_cheapest( current_product.id, current_product.price ):
             logging.info('The product with ID: {} is cheaper'.format(product.id))
-            requests.get('https://api.telegram.org/bot{}/sendmessage?text={}&chat_id={}'.format(_config['tg_token'], 'El producto {} esta mas barato. {}€'.format(product.name, current_product.price), _config['tg_chat_id']))
+            notifications.Telegram.cheapest_product( _config['tg_token'], _config['tg_chat_id'], product.url, product.name, current_product.price, db.get_prices( product.id ).last().price)
 
         if current_product is not None:
             db.insert_price(current_product.id, current_product.price)
