@@ -84,3 +84,11 @@ class database():
             self.db_instance.prices.insert( product_id=_id, price=_price )
         except:
             logging.error('Unable to insert data')
+
+
+    def is_cheapest(self, _product_id, _last_price):
+        self.connect()
+        try:
+            return _last_price < self.db_instance( self.db_instance.prices.product_id == _product_id ).select().last().price
+        except expression as identifier:
+            logging.error('Unable to compare prices')

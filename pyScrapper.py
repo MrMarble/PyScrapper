@@ -1,5 +1,6 @@
 import os, sys
 import logging
+import requests
 import json
 import database
 import shops
@@ -17,7 +18,7 @@ def set_up():
         elif type(e) is json.decoder.JSONDecodeError:
             logging.warning('Config file is corrupted!\nCreating a new one...')
 
-        config = dict(db_type="sqlite", db_host="localhost", db_user="root", db_password="root", db_name="prices")
+        config = dict(db_type="sqlite", db_host="localhost", db_user="root", db_password="root", db_name="prices", tg_token="BOT_TOKEN", tg_chat_id="000000000")
         json.dump(config, open(CURRENT_PATH + '/config.json', 'w'), indent=True)
         exit(0)
 
@@ -50,8 +51,14 @@ def run(_config):
             current_product = shops.Fnac(product.id, product.url)
         elif product.shop == 'MediaMarkt':
             current_product = shops.MediaMarkt(product.id, product.url)
+
+        if db.is_cheapest( current_product.id, current_product.price ) and current_product is not None:
+            logging.info('The product with ID: {} is cheaper'.format(product.id))
+            requests.get('https://api.telegram.org/bot{}/sendmessage?text={}&chat_id={}'.format(_config['tg_token'], 'El producto {} esta mas barato. {}€'.format(product.name, current_product.price), _config['tg_chat_id']))
+
         if current_product is not None:
             db.insert_price(current_product.id, current_product.price)
+        
             
     logging.info('All Done!')
 
