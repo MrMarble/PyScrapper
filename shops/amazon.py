@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 class Amazon(Shop):
     def __init__(self, _id, _url: str):
         super().__init__(_id, _url)
-        self.type = 'Amazon'
+        self.type = 'amazon'
         self.price = self.get_price()
 
     def get_price(self):

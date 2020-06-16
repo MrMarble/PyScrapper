@@ -2,3 +2,6 @@ venv
 .idea
 *.json
 log.txt
+urls.txt
+*.table
+*.db
