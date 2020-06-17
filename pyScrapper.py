@@ -10,8 +10,8 @@ CURRENT_PATH = (os.path.dirname(os.path.realpath(__file__)) + '/')
 
 def set_up():
     try:
-        if not os.path.exists(CURRENT_PATH + 'urls.txt'):
-            with open(CURRENT_PATH + 'urls.txt', 'w') as f:
+        if not os.path.exists(CURRENT_PATH + 'urls.csv'):
+            with open(CURRENT_PATH + 'urls.csv', 'w') as f:
                 f.write('name,url')
 
         with open(CURRENT_PATH + '/config.json', 'r') as file:
@@ -41,16 +41,20 @@ def run(_config):
 
     logging.info('Reading file urls')
     try:
-        with open('urls.txt') as f:
+        with open('urls.csv') as f:
             urls = [line.rstrip() for line in f]
     
         for url in urls:
             data = url.split(',')
-            #Change in the future by regex that obtain only the name of the domain without declare the names
-            db.insert_products(data[0],data[1],re.search('(mediamarkt|amazon|fnac)', data[1]).group(1))
-            logging.info('Urls loaded')
-    except:
-        logging.error('File load urls failed!')
+
+            if url == "" or data[1].strip() == "url":
+                continue
+
+            db.insert_products(data[0].strip(),data[1].strip(),re.search(R'[\w\d]*\.([\w\d]+)\.\w{2,3}/', data[1]).group(1))
+        
+        logging.info('Urls loaded')
+    except Exception as e:
+        logging.error(e)
 
     logging.info('Getting products...')
 
@@ -63,12 +67,10 @@ def run(_config):
 
         current_product = None
 
-        if product.shop == 'amazon':
-            current_product = shops.Amazon(product.id, product.url)
-        elif product.shop == 'fnac':
-            current_product = shops.Fnac(product.id, product.url)
-        elif product.shop == 'mediamarkt':
-            current_product = shops.MediaMarkt(product.id, product.url)
+        current_product = getattr(shops, re.search(R'[\w\d]*\.([\w\d]+)\.\w{2,3}/', product.url).group(1).capitalize())(product.id, product.url)
+
+        if current_product.price == -1.0:
+            continue
 
         if current_product is not None and db.is_cheapest( current_product.id, current_product.price ):
             logging.info('The product with ID: {} is cheaper'.format(product.id))
