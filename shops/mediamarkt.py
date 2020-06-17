@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from .shop import Shop
 
 
-class MediaMarkt(Shop):
+class Mediamarkt(Shop):
     def __init__(self, _id, _url: str):
         super().__init__(_id, _url)
         self.type = 'mediamarkt'

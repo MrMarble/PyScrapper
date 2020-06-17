@@ -73,7 +73,7 @@ class database():
     def insert_products(self, _name, _url, _shop):
         self.connect()
         try:
-            self.db_instance.products.insert( name=_name, url=_url, shop=_shop )
+            self.db_instance.products.validate_and_insert( name=_name, url=_url, shop=_shop )
         except:
             logging.error('Unable to insert data')
 
@@ -81,7 +81,7 @@ class database():
     def insert_price(self, _id, _price):
         self.connect()
         try:
-            self.db_instance.prices.insert( product_id=_id, price=_price )
+            self.db_instance.prices.validate_and_insert( product_id=_id, price=_price )
         except:
             logging.error('Unable to insert data')
 
